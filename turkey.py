@@ -1,22 +1,40 @@
 __author__ = 'Suraj'
 
-import numpy as np
-from scipy import signal,misc
+
+from numpy import *
+from scipy import signal
+#import numpy as np
 import matplotlib.pyplot as plt
-image = misc.lena().astype(np.float32)
-derfilt = np.array([1.0, -2, 1.0], dtype=np.float32)
-ck = signal.cspline2d(image, 8.0)
-deriv = (signal.sepfir2d(ck, derfilt, [1]) +
-         signal.sepfir2d(ck, [1], derfilt))
 
-plt.figure()
-plt.imshow(image)
-plt.gray()
-plt.title('Original image')
-plt.show()
 
-plt.figure()
-plt.imshow(deriv)
-plt.gray()
-plt.title('Output of spline edge filter')
+#Signal 1
+
+amp1=10.
+freq1=2.0 #hz
+
+#signal 2
+amp2=0.1
+freq2=20.0 #hz
+
+t=arange(0.0,10.0,.01)
+
+signal1=amp1*sin(freq1*t + pi/2
+                 )
+signal2=amp2*sin(t*freq2)
+conv=signal.convolve(signal1,signal2,mode='full')
+a=zeros(shape=(1000,))
+a=conv[999:1999]
+
+plt.subplot(3,1,1)
+plt.plot(t,signal1)
+plt.grid(True)
+
+plt.subplot(3,1,2)
+plt.plot(t,signal2)
+plt.grid(True)
+
+plt.subplot(3,1,3)
+plt.plot(t,a)
+plt.grid(True)
+
 plt.show()
