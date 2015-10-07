@@ -1,40 +1,42 @@
-__author__ = 'Suraj'
+#Suraj Gaud - tan960
+#homework - 3
 
 
-from numpy import *
+import numpy as np
 from scipy import signal
-#import numpy as np
 import matplotlib.pyplot as plt
 
-
-#Signal 1
-
-amp1=10.
-freq1=2.0 #hz
+#signal 1
+A1 = 10.0
+W1 = 2.0
 
 #signal 2
-amp2=0.1
-freq2=20.0 #hz
+A2 = 0.1
+W2 = 20.0
 
-t=arange(0.0,10.0,.01)
+t = np.arange(0.0,10.0,0.01)
+#added the phase to match the similar output like the one you gave in the problem
+S1 = A1*np.sin(W1*t + np.pi/2) #signal 1
+S2 = A2*np.sin(W2*t + np.pi/2) #signal 3
+S3 = signal.convolve(S1,S2,mode='full') # convolved signal 3
+print len(S1)
+print len(S2)
+#since the length of both the signals is 1000
+convolved = np.delete(S3,np.s_[0:999]) #this is to extract the last
+                                       #half of the resulting signal
 
-signal1=amp1*sin(freq1*t + pi/2
-                 )
-signal2=amp2*sin(t*freq2)
-conv=signal.convolve(signal1,signal2,mode='full')
-a=zeros(shape=(1000,))
-a=conv[999:1999]
+
 
 plt.subplot(3,1,1)
-plt.plot(t,signal1)
-plt.grid(True)
-
+plt.title('Signal 1')
+plt.plot(t,S1)
 plt.subplot(3,1,2)
-plt.plot(t,signal2)
-plt.grid(True)
-
+plt.title('Signal 2')
+plt.plot(t,S2)
 plt.subplot(3,1,3)
-plt.plot(t,a)
-plt.grid(True)
+plt.title('Resulting Signal from convolution')
+plt.plot(t,convolved)
+plt.tight_layout()
 
-plt.show()
+#save the plot as pdf
+plt.savefig('suraj_hw3_out.pdf', format='pdf')
