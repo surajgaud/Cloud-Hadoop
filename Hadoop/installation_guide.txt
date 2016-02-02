@@ -1,0 +1,146 @@
+Manual installation of Hadoop on a single node cluster on a VM 
+
+The following is a guide to  for step by step hadoop 2.7.1 installation in ubuntu 14.04(single node cluster)
+
+Hadoop pre-requisites
+
+1) sudo apt-get update
+
+2) sudo apt-get install default-jdk
+
+3) java -version
+
+
+now we need to addgroup with the name hadoop  
+4) sudo addgroup hadoop
+
+5) sudo adduser --ingroup hadoop hduser
+ 
+6) sudo adduser hduser sudo
+
+7) sudo apt-get install openssh-server
+
+8) su hduser
+
+cd to the home directory before installing the ssh keys
+
+9) ssh-keygen -t rsa -P "" (press enter after this step)
+add it to the list of authorized keys 
+
+
+10) cat $HOME/.ssh/id_rsa.pub >> $HOME/.ssh/authorized_keys
+
+test the setup by logging in to the local host, if you see if the last line says the ubuntu comes with no guarantee then the setup is fine till now!
+
+exit out to install hadoop from the apache website
+
+
+Installing Hadoop
+
+1) wget http://mirrors.sonic.net/apache/hadoop/common/hadoop-2.7.1/hadoop-2.7.1.tar.gz
+
+2) tar xvzf hadoop-2.7.1.tar.gz
+
+3) sudo mv hadoop-2.7.1 /usr/local/hadoop
+
+4) sudo chown -R hduser:hadoop /usr/local/hadoop
+
+
+Configuring hadoop files
+
+1) BASHRC
+
+sudo nano ~/.bashrc
+
+#append the code below to the end of the file and save it
+
+export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
+export HADOOP_HOME=/usr/local/hadoop
+export PATH=$PATH:$HADOOP_HOME/bin
+export PATH=$PATH:$HADOOP_HOME/sbin
+export HADOOP_MAPRED_HOME=$HADOOP_HOME
+export HADOOP_COMMON_HOME=$HADOOP_HOME
+export HADOOP_HDFS_HOME=$HADOOP_HOME
+export YARN_HOME=$HADOOP_HOME
+export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
+export HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib"
+
+#type the command below afterward
+
+source ~/.bashrc
+now give java path to run hadoop
+
+#then go to the hadoop-env.sh file
+
+sudo nano /usr/local/hadoop/etc/hadoop/hadoop-env.sh
+
+#look for the export JAVA_HOME and replace the part after the = with the path to java(this my path below)
+
+export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
+
+2) Configuration file : core-site.xml
+
+sudo nano /usr/local/hadoop/etc/hadoop/core-site.xml
+
+<property>
+<name>fs.default.name</name>
+<value>hdfs://localhost:9000</value>
+</property>
+
+3)Configuration file : hdfs-site.xml
+
+sudo nano /usr/local/hadoop/etc/hadoop/hdfs-site.xml
+
+<property>
+      <name>dfs.replication</name>
+      <value>1</value>
+ </property>
+ <property>
+      <name>dfs.namenode.name.dir</name>
+      <value>file:/usr/local/hadoop_tmp/hdfs/namenode</value>
+ </property>
+ <property>
+      <name>dfs.datanode.data.dir</name>
+      <value>file:/usr/local/hadoop_tmp/hdfs/datanode</value>
+ </property>
+
+4)Configuration file : yarn-site.xml
+
+sudo nano /usr/local/hadoop/etc/hadoop/yarn-site.xml
+
+<property>
+      <name>yarn.nodemadnager.aux-services</name>
+      <value>mapreduce_shuffle</value>
+</property>
+<property>
+      <name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+      <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+</property>
+
+5) Configuration file : mapred-site.xml
+
+cp /usr/local/hadoop/etc/hadoop/mapred-site.xml.template  /usr/local/hadoop/etc/hadoop/mapred-site.xml
+
+sudo nano /usr/local/hadoop/etc/hadoop/mapred-site.xml
+
+<property>
+      <name>mapreduce.framework.name</name>
+      <value>yarn</value>
+</property>
+
+Creating hdfs directory to store hdfs files
+
+5) sudo mkdir -p /usr/local/hadoop_tmp
+
+6) sudo mkdir -p /usr/local/hadoop_tmp/hdfs/namenode
+
+7) sudo mkdir -p /usr/local/hadoop_tmp/hdfs/datanode
+
+8) sudo chown -R hduser /usr/local/hadoop_tmp
+
+
+hdfs namenode -format
+
+start-dfs.sh
+start-yarn.sh
+jps
